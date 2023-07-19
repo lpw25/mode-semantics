@@ -1,0 +1,20 @@
+\documentclass{article}
+
+\usepackage{supertabular}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tikz}
+\usepackage{fontawesome}
+\newcommand{\lock}{\tikz{\node[scale=1, line width=0pt, inner sep=0pt] at (0,0) {\faLock\,};}}
+
+\input{ott}
+
+\renewcommand{\ottkw}[1]{\textsf{\textbf{#1}}}
+\renewcommand{\ottusedrule}[1]{\[#1\]\\}
+
+\begin{document}
+
+\ottall
+
+\end{document}

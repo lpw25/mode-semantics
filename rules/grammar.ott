@@ -1,0 +1,121 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Metavariables  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+metavar x ::= {{ com Term variables }}
+indexvar i, j ::=
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Grammar  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+grammar
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Modes  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+l {{ tex \ell }} , ul {{ tex {\_} }} :: 'locality_' ::= {{ com Locality }}
+  | global        ::   :: Global {{ com Global }}
+    {{ tex \mathtt{global} }}
+  | local         ::   :: Local {{ com Local }}
+    {{ tex \mathtt{local} }}
+
+o {{ tex o }} , uo {{ tex {\_} }} :: 'linearity_' ::= {{ com Linearity }}
+  | many        ::   :: Many {{ com Many }}
+    {{ tex \mathtt{many} }}
+  | once        ::   :: Once {{ com Once }}
+    {{ tex \mathtt{once} }}
+
+u {{ tex \upsilon }} , uu {{ tex {\_} }} :: 'uniqueness_' ::= {{ com Uniqueness }}
+  | unique        ::   :: Unique {{ com Unique }}
+    {{ tex \mathtt{unique} }}
+  | shared        ::   :: Shared {{ com Shared }}
+    {{ tex \mathtt{shared} }}
+  | dual ( o )    ::  M:: Dual {{ com Dual }}
+    {{ tex [[o]]^{\dagger} }}
+
+m {{ tex \mu }} :: 'mode_' ::= {{ com Mode }}
+  | < l , o , u >        ::   :: Mode {{ com Mode }}
+    {{ tex \langle [[l]] , [[o]] , [[u]] \rangle }}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Types  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+t {{ tex \tau }} :: 'type_' ::= {{ com Type }}
+  | t1 @ m1 -> t2 @ m2   :: :: arrow  {{ com Function }}
+    {{ tex [[t1]] \mathbin{@} [[m1]] \mathrel{\to} [[t2]] \mathbin{@} [[m2]] }}
+  | t1 * t2              :: :: product   {{ com Product }}
+    {{ tex [[t1]] \times [[t2]] }}
+  | unit                 :: :: unit  {{ com Unit }}
+    {{ tex \mathbf{1} }}
+  | t1 + t2              :: :: sum   {{ com Sum }}
+    {{ tex [[t1]] + [[t2]] }}
+  | t ref                :: :: ref  {{ com Ref }}
+    {{ tex [[t]] \; \mathtt{ref} }}
+  | ( t )                :: S:: parens
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Contexts  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+G {{ tex \Gamma }} :: 'ctx_' ::= {{ com Term contexts }}
+  | empty                 :: :: nil
+  | G ; x : t @ m         :: :: cons
+    {{ tex [[G]] \mathbin{;} \; [[x]] \mathbin{:} [[t]] \mathbin{@} [[m]] }}
+  | G ; lock ( l , o )    :: :: lock
+    {{ tex [[G]] \mathbin{;} \; \lock_{([[l]],[[o]])} }}
+  | G1 ; G2               :: M:: append
+    {{ tex [[G1]] \mathbin{;} [[G2]] }}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Terms  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+e :: 'term_' ::= {{ com Term }}
+  | x                                       :: :: var     {{ com Variable }}
+  | x _ a                                   :: :: aliased {{ com Aliased variable }}
+    {{ tex [[x]]_{a} }}
+  | fn x . e                                :: :: abs {{ com Abstraction }}
+    {{ tex \lambda [[x]] \mathbin{.} [[e]] }}
+  | e1 e2                                   :: :: app {{ com Application }}
+  | ( e1 , e2 )                             :: :: prodi {{ com Product introduction }}
+  | let ( x1 , x2 ) = e1 in e2              :: :: prode {{ com Product elimination }}
+    {{ tex \mathtt{let} \; ([[x1]],[[x2]]) = [[e1]] \mathtt{in} \; [[e2]] }}
+  | ()                                      :: :: unit {{ com Unit }}
+  | e1 ; e2                              :: :: seq {{ com Sequence }}
+    {{ tex [[e1]] ; \; [[e2]] }}
+  | inl e                                :: :: inl {{ com Left }}
+    {{ tex \mathop{\mathtt{inl} } [[e]] }}
+  | inr e                                :: :: inr {{ com Right }}
+    {{ tex \mathop{\mathtt{inr} } [[e]] }}
+  | case e1 ( inl x1 . e2 ) ( inr x2 . e3 ) :: :: case {{ com Case }}
+    {{ tex \mathop{\mathtt{case} } [[e1]] \, (\mathop{\mathtt{inl} } [[x1]] \mathbin{.} [[e2]]) \, (\mathop{\mathtt{inr} } [[x2]] \mathbin{.} [[e3]]) }}
+  | region e                                :: :: region {{ com Region }}
+    {{ tex \mathop{\mathtt{region} } [[e]] }}
+  | borrow e1 as x in e2                    :: :: borrow {{ com Borrowing }}
+    {{ tex \mathop{\mathtt{borrow} } [[e1]] \mathbin{\mathtt{as} } [[x]] \mathbin{\mathtt{in} } [[e2]] }}
+  | ref e                                   :: :: ref {{ com Fresh reference }}
+    {{ tex \mathop{\mathtt{ref} } [[e]] }}
+  | ! e                                     :: :: read {{ com Read reference }}
+  | e1 := e2                                :: :: write {{ com Write reference }}
+  | reuse e1 with e2                        :: :: update {{ com Strong update }}
+    {{ tex \mathop{\mathtt{reuse} } [[e1]] \mathbin{\mathtt{with} } [[e2]] }}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Terminals  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+terminals :: 'terminals_' ::=
+  | ->                :: :: arrow {{ tex \to }}
+  | fn                :: :: lambda {{ tex \lambda }}
+  | |-                :: :: turnstile  {{ tex \vdash }}
+  | empty             :: :: empty {{ tex \varepsilon }}
+  | <=                :: :: lessthan {{ tex \le }}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Formulae  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+formula :: formula_ ::=
+| judgement                    ::   :: judgement
+| judgement all locks l o in G ::   :: locks
+  {{ tex [[judgement]] \; \; \mathop{\forall} \lock_{([[l]],[[o]])} \in [[G]] }}
