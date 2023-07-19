@@ -1,21 +1,21 @@
 
- e ::= x | xₐ | e e | λx. e
-     | (e, e) | let (x, x) = e in e | () | e; e
-     | inl e | inr e | case e (inl x. e) (inr x. e)
-     | region e | borrow e as x in e
-     | ref e | !e | e := e | reuse e with e
+    e ::= x | xₐ | e e | λx. e
+        | (e, e) | let (x, x) = e in e | () | e; e
+        | inl e | inr e | case e (inl x. e) (inr x. e)
+        | region e | borrow e as x in e
+        | ref e | !e | e := e | reuse e with e
 
- 𝓵 ::= global | local
+    𝓵 ::= global | local
 
- 𝓸 ::= many | once
+    𝓸 ::= many | once
 
- υ ::= unique | shared
+    υ ::= unique | shared
 
- μ ::= ⟨𝓵,𝓸,υ⟩
+    μ ::= ⟨𝓵,𝓸,υ⟩
 
- τ ::= τ @ μ → τ @ μ | τ * τ | 1 | τ + τ | τ ref
+    τ ::= τ @ μ → τ @ μ | τ * τ | 1 | τ + τ | τ ref
 
- Γ ::= ε | Γ; x : τ @ μ | Γ; lock(𝓵,𝓸)
+    Γ ::= ε | Γ; x : τ @ μ | Γ; lock(𝓵,𝓸)
 
 
       Γ ⊢ e : τ @ μ₁
